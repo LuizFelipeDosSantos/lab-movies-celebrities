@@ -51,4 +51,14 @@ router.post("/celebrities/:id/edit", async (req, res) => {
   }
 });
 
+router.post("/celebrities/:id/delete", async (req, res) => {
+  try {
+    const celebrityId = mongoose.Types.ObjectId(req.params.id);
+    await Celebrity.findByIdAndRemove(celebrityId);
+    res.redirect("/celebrities");
+  } catch (err) {
+    console.error(err);
+  }
+});
+
 module.exports = router;
