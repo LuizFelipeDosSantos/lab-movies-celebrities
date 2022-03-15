@@ -2,6 +2,7 @@ const async = require("hbs/lib/async");
 const mongoose = require("mongoose");
 const router = require("express").Router();
 const Celebrity = require("../models/Celebrity.model");
+const Movie = require("../models/Movies.model");
 
 // all your routes here
 
@@ -54,6 +55,14 @@ router.post("/celebrities/:id/edit", async (req, res) => {
 router.post("/celebrities/:id/delete", async (req, res) => {
   try {
     const celebrityId = mongoose.Types.ObjectId(req.params.id);
+    const moviesCelebrity = await Movie.find({cast: celebrityId});
+
+    moviesCelebrity.forEach(async (movie) => {
+      const celebrityIndex = movie.cast.indexOf(celebrityId);
+      movie.cast.splice(celebrityIndex, 1);
+      await movie.save();
+    });
+
     await Celebrity.findByIdAndRemove(celebrityId);
     res.redirect("/celebrities");
   } catch (err) {
